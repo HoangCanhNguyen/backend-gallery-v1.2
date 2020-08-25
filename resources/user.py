@@ -1,7 +1,6 @@
 from flask_restful import Resource, request
-from flask import jsonify, url_for
+from flask import url_for
 from flask_jwt_extended import jwt_required, get_jwt_claims, get_raw_jwt
-from marshmallow import ValidationError
 from threading import Thread
 
 from database import db, Database
