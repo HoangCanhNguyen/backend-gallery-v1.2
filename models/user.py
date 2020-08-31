@@ -1,16 +1,14 @@
 import bcrypt
 from flask_pymongo import pymongo
-from flask_restful import request
 from flask import jsonify
 
-from database import db, user_col
-from schemas.user import UserSchema
+from database import user_col
 from confirmation_token import confirm_token
 
 
 class UserModule():
-    def __init__(self, _id='', username='', password='', activated=False, email='', **kwargs):
-        self.id = _id
+    def __init__(self, id='', username='', password='', activated=False, email='', **kwargs):
+        self.id = id
         self.username = username
         self.password = password
         self.activated = activated
@@ -18,7 +16,7 @@ class UserModule():
 
     @classmethod
     def find_maxium_user(cls):
-        return str(user_col.find().count())
+        return str(user_col.find().count() + 1)
 
     @staticmethod
     def find_by_username(username):
@@ -27,7 +25,7 @@ class UserModule():
 
     @staticmethod
     def find_by_id(_id):
-        user = db.user_col.find_one({"id": _id})
+        user = user_col.find_one({"id": _id})
         return user if user else None
 
     @staticmethod

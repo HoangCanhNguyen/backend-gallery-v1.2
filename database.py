@@ -24,3 +24,12 @@ class Database:
             return True
         except:
             return False
+    
+    @classmethod
+    def save_picture_to_db(cls, data):
+        try:
+            pic_col.insert_one(data)
+            return True
+        except:
+            return False
+
