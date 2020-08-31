@@ -2,7 +2,7 @@ from config import app, api, jwt
 from marshml import ma
 
 
-from resources.user import UserLogin, UserRegister, UserLogout, TokenRefresh, UserInfo
+from resources.user import UserLogin, UserRegister, UserLogout, TokenRefresh, UserInfo, PasswordConfirmation, ConfirmPasswordAction
 from resources.confirmation import ResendEmailConfirmationToken, EmailConfirmation
 from resources.picture import Picture
 from resources.comment import Comment
@@ -16,6 +16,8 @@ api.add_resource(UserLogout, '/user/logout')
 api.add_resource(EmailConfirmation, '/user/register')
 api.add_resource(UserInfo, '/info')
 
+api.add_resource(PasswordConfirmation, '/authenticate')
+api.add_resource(ConfirmPasswordAction, '/user/confirm/<string:token>')
 
 api.add_resource(ResendEmailConfirmationToken, '/resend/confirmation/email')
 

@@ -24,7 +24,14 @@ class Database:
             return True
         except:
             return False
-    
+
+    @classmethod
+    def update_user_in_db(cls, userInfo):
+        try:
+            user_col.update_one({"email": userInfo["email"]}, {
+                                "$set": {"password": userInfo["password"]}})
+        except:
+            return False
     @classmethod
     def save_picture_to_db(cls, data):
         try:
@@ -32,4 +39,3 @@ class Database:
             return True
         except:
             return False
-

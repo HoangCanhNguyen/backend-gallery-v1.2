@@ -1,5 +1,5 @@
 from flask_restful import Resource, request
-from flask import url_for
+from flask import url_for, render_template, redirect, make_response
 from threading import Thread
 
 from confirmation_token import generate_confirmation_token
@@ -12,6 +12,9 @@ class EmailConfirmation(Resource):
     def get(self):
         token = request.args.get('token')
         email = ConfirmationModule.confirm_email(token)
+        # if email:
+        #     auth_url = url_for('passwordconfirmation', token=token)
+        #     return redirect(auth_url)
 
 class ResendEmailConfirmationToken(Resource):
     def post(self):
