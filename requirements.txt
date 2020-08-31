@@ -4,6 +4,7 @@ bcrypt==3.2.0
 blinker==1.4
 cffi==1.14.2
 click==7.1.2
+croniter==0.3.34
 dnspython==2.0.0
 Flask==1.1.2
 Flask-Bcrypt==0.7.1
@@ -18,12 +19,17 @@ itsdangerous==1.1.0
 Jinja2==2.11.2
 MarkupSafe==1.1.1
 marshmallow==3.7.1
+natsort==7.0.1
 pampy==0.3.0
 pycodestyle==2.6.0
 pycparser==2.20
 PyJWT==1.7.1
 pymongo==3.11.0
+python-dateutil==2.8.1
 pytz==2020.1
+redis==3.5.3
+rq==1.5.1
+rq-scheduler==0.10.0
 six==1.15.0
 toml==0.10.1
 Werkzeug==1.0.1

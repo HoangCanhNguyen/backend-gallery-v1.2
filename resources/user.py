@@ -1,18 +1,35 @@
 from flask_restful import Resource, request
-from flask import url_for
-from flask_jwt_extended import jwt_required, get_jwt_claims, get_raw_jwt
+from flask import url_for, make_response
+from flask_jwt_extended import jwt_required, get_jwt_claims, get_raw_jwt, get_jwt_identity
 from threading import Thread
+from bson import json_util
+import time
+from rq.job import Job
 
 from database import db, Database
 from schemas.user import UserSchema
 from models.user import UserModule
+from models.confirmation import ConfirmationModule
 from confirmation_token import generate_confirmation_token
 from jwt_token import access_token, refresh_token, recreate_access_token
 from blacklist import BLACKLIST
 from mail import Mail
+from worker import q as queue, conn
 
+from flask_jwt_extended import jwt_required
 
 user_schema = UserSchema()
+
+
+class UserInfo(Resource):
+    @jwt_required
+    def get(self):
+        user_info = UserSchema(only=("username", "id", "email", "role"))
+        _id = get_jwt_identity()
+        user = UserModule.find_by_id(_id)
+        current_user = UserModule(**user)
+        reponse_user = user_info.dump(current_user)
+        return make_response(reponse_user)
 
 
 class UserRegister(Resource):
@@ -38,8 +55,9 @@ class UserRegister(Resource):
         sending_thread.start()
 
         password = UserModule.hash_password(raw_password)
-        _id = UserModule.find_maxium_user()
-        data = UserModule(_id=_id, password=password, **user_data)
+        id = UserModule.find_maxium_user()
+
+        data = UserModule(id=id, password=password, **user_data)
         converted_data = user_schema.dump(data)
 
         if Database.save_user_to_db(converted_data):
@@ -70,10 +88,21 @@ class UserLogin(Resource):
 
 class UserLogout(Resource):
     @jwt_required
-    def post(self):
+    def get(self):
         jti = get_raw_jwt()['jti']
         BLACKLIST.add(jti)
         return {"msg": "Log out successfully"}
+
+
+class AutoLogin(Resource):
+    def get(self):
+        job = Job.fetch('email_confirmation', connection=conn)
+        print(job.get_status())
+        while not job.is_finished:
+            print("I'm")
+            time.sleep(1)
+            print("working")
+        return "abc"
 
 
 class TokenRefresh(Resource):
@@ -82,6 +111,3 @@ class TokenRefresh(Resource):
         if new_token:
             return {"access_token": new_token}, 200
         return {"msg": "Can not create new access token"}, 400
-
-
-

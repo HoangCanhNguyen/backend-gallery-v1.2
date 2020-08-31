@@ -1,7 +1,10 @@
+import os
 from flask import Flask
 from flask_restful import Api
-from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+
+from flask_jwt_extended import JWTManager
+
 
 
 app = Flask(__name__)
@@ -13,6 +16,7 @@ app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
-api = Api(app)
 
+
+api = Api(app)
 jwt = JWTManager(app)

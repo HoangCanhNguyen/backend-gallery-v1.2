@@ -7,8 +7,8 @@ from confirmation_token import confirm_token
 
 
 class UserModule():
-    def __init__(self, _id='', username='', password='', activated=False, email='', **kwargs):
-        self.id = _id
+    def __init__(self, id='', username='', password='', activated=False, email='', **kwargs):
+        self.id = id
         self.username = username
         self.password = password
         self.activated = activated
@@ -16,7 +16,7 @@ class UserModule():
 
     @classmethod
     def find_maxium_user(cls):
-        return str(user_col.find().count())
+        return str(user_col.find().count() + 1)
 
     @staticmethod
     def find_by_username(username):

@@ -6,12 +6,14 @@ from confirmation_token import generate_confirmation_token
 from models.user import UserModule
 from models.confirmation import ConfirmationModule
 from mail import Mail
+from worker import q as queue
 
 
 class EmailConfirmation(Resource):
     def get(self):
         token = request.args.get('token')
-        ConfirmationModule.confirm_email(token)
+        email = ConfirmationModule.confirm_email(token)
+        ConfirmationModule.enqueue(email)
 
 class ResendEmailConfirmationToken(Resource):
     def post(self):
