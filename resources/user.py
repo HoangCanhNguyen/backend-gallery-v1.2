@@ -1,5 +1,5 @@
 from flask_restful import Resource, request
-from flask import url_for, make_response
+from flask import url_for, make_response, render_template
 from flask_jwt_extended import jwt_required, get_jwt_claims, get_raw_jwt, get_jwt_identity
 from threading import Thread
 from bson import json_util
@@ -8,6 +8,7 @@ from database import db, Database
 from schemas.user import UserSchema
 from models.user import UserModule
 from models.confirmation import ConfirmationModule
+from models.ConfirmPasswordForm import UserRegistryForm
 from confirmation_token import generate_confirmation_token
 from jwt_token import access_token, refresh_token, recreate_access_token
 from blacklist import BLACKLIST
@@ -88,6 +89,23 @@ class UserLogout(Resource):
         jti = get_raw_jwt()['jti']
         BLACKLIST.add(jti)
         return {"msg": "Log out successfully"}
+
+class PasswordConfirmation(Resource):
+    def get(self):
+        token = request.args.get('token')
+        url = request.path
+        email = ConfirmationModule.confirm_email(token)
+        return make_response(render_template('auth_credential.html', email=email, token=token))
+
+class ConfirmPasswordAction(Resource):
+    def post(self, token):
+        form = UserRegistryForm()
+        # if form.validate_on_submit():
+        raw_password = request.form['password']
+        email = ConfirmationModule.confirm_email(token)
+        password = UserModule.hash_password(raw_password)
+        data  = {"email": email, "password": password}
+        Database.update_user_in_db(data)
 
 
 class TokenRefresh(Resource):
