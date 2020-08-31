@@ -18,7 +18,6 @@ class Picture(Resource):
             pic_list.append(pic)
         return make_response(json_util.dumps(pic_list, ensure_ascii=False).encode('utf8'), 200)
 
-    @jwt_required
     def post(self):
       _id = request.get_json()["id"]
       pic = PictureModule.find_by_id(_id)
