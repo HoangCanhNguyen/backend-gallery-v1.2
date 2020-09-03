@@ -4,7 +4,6 @@ from bson import json_util
 
 from models.comment import CommentModule
 
-
 class Comment(Resource):
     def post(self):
         _pic_id = request.get_json()["pic_id"]
@@ -15,4 +14,5 @@ class Comment(Resource):
 
 class CommentCreation(Resource):
     def post(self):
-      pass
+        cmt_info = request.get_json()
+        return make_response(json_util.dumps(cmt_info, ensure_ascii=False).encode('utf8'), 200) if CommentModule.create_comment(cmt_info) else None
