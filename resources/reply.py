@@ -11,3 +11,9 @@ class Reply(Resource):
         replies = list(ReplyModule.find_by_cmt_id(cmt_id))
 
         return make_response(json_util.dumps(replies, ensure_ascii=False).encode('utf8'), 200)
+
+
+class ReplyCreation(Resource):
+      def post(self):
+        reply_info = request.get_json()
+        return make_response(json_util.dumps(reply_info, ensure_ascii=False).encode('utf8'), 200) if ReplyModule.create_reply(reply_info) else None

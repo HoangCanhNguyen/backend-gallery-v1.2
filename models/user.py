@@ -7,12 +7,13 @@ from confirmation_token import confirm_token
 
 
 class UserModule():
-    def __init__(self, id='', username='', password='', activated=False, email='', **kwargs):
+    def __init__(self, id='', username='', password='', activated=False, avatarURL='', email='', **kwargs):
         self.id = id
         self.username = username
         self.password = password
         self.activated = activated
         self.email = email
+        self.avatarURL = avatarURL
 
     @classmethod
     def find_maxium_user(cls):
@@ -59,3 +60,13 @@ class UserModule():
             user_col.update_one({"email": email}, {
                                 "$set": {"activated": True}})
             return True
+
+    @classmethod
+    def upload_avatar(cls, _id, url):
+        try:
+            user_col.update_one({"id": _id}, {
+                "$set": {"avatarURL": url}
+            })
+            return True
+        except:
+            return False

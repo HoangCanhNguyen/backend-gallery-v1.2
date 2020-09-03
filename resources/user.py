@@ -22,7 +22,8 @@ user_schema = UserSchema()
 class UserInfo(Resource):
     @jwt_required
     def get(self):
-        user_info = UserSchema(only=("username", "id", "email", "role"))
+        user_info = UserSchema(
+            only=("username", "id", "email", "role", "avatarURL"))
         _id = get_jwt_identity()
         user = UserModule.find_by_id(_id)
         current_user = UserModule(**user)
@@ -90,12 +91,14 @@ class UserLogout(Resource):
         BLACKLIST.add(jti)
         return {"msg": "Log out successfully"}
 
+
 class PasswordConfirmation(Resource):
     def get(self):
         token = request.args.get('token')
         url = request.path
         email = ConfirmationModule.confirm_email(token)
         return make_response(render_template('auth_credential.html', email=email, token=token))
+
 
 class ConfirmPasswordAction(Resource):
     def post(self, token):
@@ -104,7 +107,7 @@ class ConfirmPasswordAction(Resource):
         raw_password = request.form['password']
         email = ConfirmationModule.confirm_email(token)
         password = UserModule.hash_password(raw_password)
-        data  = {"email": email, "password": password}
+        data = {"email": email, "password": password}
         Database.update_user_in_db(data)
 
 
@@ -114,3 +117,11 @@ class TokenRefresh(Resource):
         if new_token:
             return {"access_token": new_token}, 200
         return {"msg": "Can not create new access token"}, 400
+
+
+class AvatarUpload(Resource):
+    @jwt_required
+    def post(self):
+        _id = get_jwt_identity()
+        avatarURL = request.get_json()["avatarURL"]
+        result = UserModule.upload_avatar(_id, avatarURL)
