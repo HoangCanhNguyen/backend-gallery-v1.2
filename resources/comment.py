@@ -1,6 +1,8 @@
 from flask_restful import Resource, request
 from flask import jsonify, make_response
 from bson import json_util
+from flask_jwt_extended import jwt_required
+
 
 from models.comment import CommentModule
 
@@ -13,6 +15,7 @@ class Comment(Resource):
 
 
 class CommentCreation(Resource):
+    @jwt_required
     def post(self):
         cmt_info = request.get_json()
         return make_response(json_util.dumps(cmt_info, ensure_ascii=False).encode('utf8'), 200) if CommentModule.create_comment(cmt_info) else None
