@@ -7,14 +7,15 @@ from config import jwt
 from blacklist import BLACKLIST
 
 
-# add claims to jwt token
-# @jwt.user_claims_loader
-# def add_claims_to_jwt(identity):
-#     if UserModule.find_by_id(identity)["role"] == 'admin':
-#         return {
-#             'required': True
-#         }
-#     return {'required': False}
+# add claims to jwt token for authentication
+@jwt.user_claims_loader
+def add_claims_to_jwt(identity):
+    current_user = UserModule.find_by_id(identity)
+    if current_user["role"] == 'admin' or current_user["role"] == 'artist' or current_user["role"] == 'collector':
+        return {
+            'role': 'non_user'
+        }
+    return {'role': 'user'}
 
 # create jwt access token
 def access_token(_id, status):

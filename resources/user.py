@@ -28,6 +28,7 @@ class UserInfo(Resource):
         user = UserModule.find_by_id(_id)
         current_user = UserModule(**user)
         reponse_user = user_info.dump(current_user)
+        print(reponse_user)
         return make_response(reponse_user)
 
 
@@ -71,7 +72,7 @@ class UserLogin(Resource):
 
         user = UserModule.find_by_email(email)
         if user and UserModule.verify_password(email, password):
-            if user["activated"]:
+            if user["activated"] and user["role"] == 'user':
                 accessToken = access_token(
                     UserModule.find_by_email(email)["id"], True)
                 refreshToken = refresh_token(
@@ -80,8 +81,8 @@ class UserLogin(Resource):
                     "access_token": accessToken,
                     "refresh_token": refreshToken
                 }, 200
-            return {'msg': 'Hãy xác nhận email của bạn'}, 401
-        return {'msg': 'Opps, BẠN KHÔNG THỂ ĐĂNG NHẬP'}, 401
+            return {'msg': 'Opps, BẠN KHÔNG THỂ ĐĂNG NHẬP'}, 401
+        return {'msg': 'TÀI KHOẢN/MẬT KHẨU KHÔNG ĐÚNG'}, 401
 
 
 class UserLogout(Resource):
