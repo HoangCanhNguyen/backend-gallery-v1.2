@@ -3,10 +3,14 @@ from marshml import ma
 
 
 from resources.user import UserLogin, UserRegister, UserLogout, TokenRefresh, UserInfo, PasswordConfirmation, ConfirmPasswordAction, AvatarUpload
-from resources.confirmation import ResendEmailConfirmationToken, EmailConfirmation
+from resources.vendor import VendorLogin, VendorLogout
 from resources.picture import Picture
+
 from resources.comment import Comment, CommentCreation
 from resources.reply import Reply, ReplyCreation
+from resources.confirmation import ResendEmailConfirmationToken, EmailConfirmation
+
+
 
 # add routes to API
 api.add_resource(UserRegister, '/user/register')
@@ -15,6 +19,10 @@ api.add_resource(TokenRefresh, '/user/authenticate')
 api.add_resource(UserLogout, '/user/logout')
 api.add_resource(EmailConfirmation, '/user/register')
 api.add_resource(UserInfo, '/info')
+
+api.add_resource(VendorLogin, '/vendor/login')
+api.add_resource(VendorLogout, '/vendor/logout')
+
 
 api.add_resource(AvatarUpload, '/user/avatar/upload')
 api.add_resource(PasswordConfirmation, '/authenticate')
