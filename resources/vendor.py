@@ -19,7 +19,6 @@ class VendorLogin(Resource):
         password = user_data["raw_password"]
 
         user = UserModule.find_by_email(email)
-        print(user)
         if user and UserModule.verify_password(email, password):
             if user["activated"] and (user['role'] == 'artist' or user['role'] == 'collector'):
                 accessToken = access_token(
