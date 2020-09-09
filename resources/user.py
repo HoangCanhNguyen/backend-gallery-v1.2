@@ -28,7 +28,6 @@ class UserInfo(Resource):
         user = UserModule.find_by_id(_id)
         current_user = UserModule(**user)
         reponse_user = user_info.dump(current_user)
-        print(reponse_user)
         return make_response(reponse_user)
 
 
@@ -72,7 +71,7 @@ class UserLogin(Resource):
 
         user = UserModule.find_by_email(email)
         if user and UserModule.verify_password(email, password):
-            if user["activated"] and user["role"] == 'user':
+            if user["activated"] and user["role"] == 'user' or user["role"] =='admin':
                 accessToken = access_token(
                     UserModule.find_by_email(email)["id"], True)
                 refreshToken = refresh_token(
