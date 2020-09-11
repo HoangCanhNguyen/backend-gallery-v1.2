@@ -7,14 +7,13 @@ class PictureModule:
         self.id = id
         self.title = title
 
-    @staticmethod
-    def find_by_title(title):
-        pic = pic_col.find_one({"title": title})
+    def find_by_title(self):
+        pic = pic_col.find_one({"title": self.title})
         return pic if pic else None
 
-    @classmethod
-    def find_by_id(cls, _id):
-        pic = pic_col.find_one({"id": _id})
+    @property
+    def find_by_id(self):
+        pic = pic_col.find_one({"id": self.id})
         return pic if pic else None
 
     @classmethod
