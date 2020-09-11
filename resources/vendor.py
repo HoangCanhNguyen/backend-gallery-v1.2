@@ -85,3 +85,11 @@ class AccountInfo(Resource):
         for account in accounts:
             account_list.append(account)
         return make_response(json_util.dumps(account_list, ensure_ascii=False).encode('utf8'), 200)
+
+    def post(self):
+        account_list = []
+        status = request.get_json()["status"]
+        accounts = VendorModule.filter_by_status(status)
+        for account in accounts:
+            account_list.append(account)
+        return make_response(json_util.dumps(account_list, ensure_ascii=False).encode('utf8'), 200)
