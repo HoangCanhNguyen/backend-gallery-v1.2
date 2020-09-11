@@ -10,7 +10,8 @@ from blacklist import BLACKLIST
 # add claims to jwt token for authentication
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):
-    current_user = UserModule.find_by_id(identity)
+    user = UserModule(id = identity)
+    current_user = user.find_by_id()
     if current_user["role"] == 'admin' or current_user["role"] == 'artist' or current_user["role"] == 'collector':
         return {
             'role': 'non_user'
