@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 
-from user import UserSchema
+from schemas.user import UserSchema
 
 
 class VendorSchema(UserSchema):
@@ -11,3 +11,4 @@ class VendorSchema(UserSchema):
     description = fields.Str()
     admin_confirmation = fields.Boolean(default=False)
     role = fields.Str()
+    tel = fields.Str()

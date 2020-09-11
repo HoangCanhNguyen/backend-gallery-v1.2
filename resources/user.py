@@ -1,8 +1,9 @@
 from flask_restful import Resource, request
 from flask import url_for, make_response, render_template
 from flask_jwt_extended import jwt_required, get_jwt_claims, get_raw_jwt, get_jwt_identity
-from threading import Thread
 from bson import json_util
+
+from config import queue as q
 
 from database import db, Database
 from schemas.user import UserSchema
@@ -25,57 +26,49 @@ class UserInfo(Resource):
         user_info = UserSchema(
             only=("username", "id", "email", "role", "avatarURL"))
         _id = get_jwt_identity()
-        user = UserModule.find_by_id(_id)
-        current_user = UserModule(**user)
+        user = UserModule(id=_id)
+        current_user = UserModule(**user.find_by_id())
         reponse_user = user_info.dump(current_user)
         return make_response(reponse_user)
 
 
 class UserRegister(Resource):
     def post(self):
-        user_data = user_schema.load(request.get_json())
+        data = user_schema.load(request.get_json())
 
-        username = user_data["username"]
-        email = user_data["email"]
-        raw_password = user_data["raw_password"]
-
-        user = UserModule.find_by_username(username)
-
-        if user:
+        user = UserModule(**data)
+        if user.find_by_username():
             return {"msg": "TÊN ĐĂNG NHẬP ĐÃ TỒN TẠI"}, 400
-        if UserModule.find_by_email(email):
+        if user.find_by_email():
             return {"msg": "EMAIL ĐÃ TỒN TẠI"}, 400
 
-        token = generate_confirmation_token(email)
+        token = generate_confirmation_token(user.email)
         confirm_url = url_for('userregister', token=token, _external=True)
 
-        sending_thread = Thread(target=Mail.send_mail_confirmation_to_user, args=(
-            email, confirm_url,), daemon=True)
-        sending_thread.start()
+        email_confirmation = q.enqueue(Mail.send_mail_confirmation_to_user, args=(
+            user.email, confirm_url,), result_ttl=0)
 
-        password = UserModule.hash_password(raw_password)
-        id = UserModule.find_maxium_user()
-        data = UserModule(id=id, password=password, **user_data)
-        converted_data = user_schema.dump(data)
+        user.id = user.find_maxium_user()
+        user.password = user.hash_password
 
-        if Database.save_user_to_db(converted_data):
-            return {"msg": "XÁC THỰC EMAIL ĐỂ KÍCH HOẠT TÀI KHOẢN"}, 201
+        user.save_to_database(user_schema.dump(user))
+
+        return {"msg": "XÁC THỰC EMAIL ĐỂ KÍCH HOẠT TÀI KHOẢN"}, 201
 
 
 class UserLogin(Resource):
     def post(self):
-        user_data = user_schema.load(request.get_json())
+        data = user_schema.load(request.get_json())
 
-        email = user_data["email"]
-        password = user_data["raw_password"]
+        user = UserModule(**data)
+        user_exist = user.find_by_email()
 
-        user = UserModule.find_by_email(email)
-        if user and UserModule.verify_password(email, password):
-            if user["activated"] and user["role"] == 'user' or user["role"] =='admin':
+        if user_exist and user.verify_password():
+            if user_exist["activated"] and user_exist["role"] == 'user' or user_exist["role"] == 'admin':
                 accessToken = access_token(
-                    UserModule.find_by_email(email)["id"], True)
+                    user_exist["id"], True)
                 refreshToken = refresh_token(
-                    UserModule.find_by_email(email)["id"])
+                    user_exist["id"])
                 return {
                     "access_token": accessToken,
                     "refresh_token": refreshToken
