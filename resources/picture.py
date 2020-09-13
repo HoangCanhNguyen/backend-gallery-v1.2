@@ -11,6 +11,7 @@ picture_schema = PictureSchema()
 
 
 class Picture(Resource):
+  # get all pics
     def get(self):
         pic_list = []
         pics = list(PictureModule.get_all_pics())
@@ -18,6 +19,7 @@ class Picture(Resource):
             pic_list.append(pic)
         return make_response(json_util.dumps(pic_list, ensure_ascii=False).encode('utf8'), 200)
 
+  # get pic by ID
     def post(self):
         pic = PictureModule(id=request.get_json()["id"])
         return make_response(json_util.dumps(pic.find_by_id), 200)
@@ -27,3 +29,12 @@ class Picture(Resource):
 
     def update(self):
         pass
+
+
+class PictureInsert(Resource):
+  # create new pic
+    def post(self):
+        data = request.get_json()
+        pic = PictureModule(**data)
+        pic.insert_picture()
+    

@@ -20,3 +20,11 @@ class PictureModule:
     def get_all_pics(cls):
         pics = pic_col.find()
         return pics
+
+    @classmethod
+    def insert_picture(cls):
+        try:
+            pic_col.insert_one(cls)
+            return True
+        except:
+            return False
