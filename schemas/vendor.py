@@ -6,9 +6,9 @@ from schemas.user import UserSchema
 class VendorSchema(UserSchema):
     class Meta():
         load_only = ("raw_password",)
-        dump_only = ("admin_confirmation","id", "password","activated",)
+        dump_only = ("admin_confirmation","id", "password","status",)
 
+    dateOfBirth = fields.Raw()
     description = fields.Str()
-    admin_confirmation = fields.Boolean(default=False)
     role = fields.Str()
     tel = fields.Str()

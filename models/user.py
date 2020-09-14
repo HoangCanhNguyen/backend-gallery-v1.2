@@ -7,12 +7,12 @@ from confirmation_token import confirm_token
 
 
 class UserModule():
-    def __init__(self, id='', username='', raw_password='', password='', activated=False, avatarURL='', email='', role='user', **kwargs):
+    def __init__(self, id='', username='', raw_password='', password='', status='pending email', avatarURL='', email='', role='user', **kwargs):
         self.id = id
         self.username = username
         self.password = password
         self.raw_password = raw_password
-        self.activated = activated
+        self.status = status
         self.email = email
         self.avatarURL = avatarURL
         self.role = role
@@ -41,6 +41,12 @@ class UserModule():
             hased_pw = user["password"]
         return True if bcrypt.checkpw(self.raw_password.encode("utf-8"), hased_pw) else False
 
+    def delete_user(self):
+        try:
+            user_col.delete_one({"id": self.id})
+        except:
+            return None
+
     @classmethod
     def save_to_database(cls, data):
         user_col.insert_one(data)
@@ -57,10 +63,13 @@ class UserModule():
             "username": 1,
             "email": 1,
             "role": 1,
-            "activated": 1
+            "status": 1
         }))
         return collections
 
+    @classmethod
+    def get_pending_approval(cls):
+        return user_col.find({"status": "pending approval"}).count()
 
     @classmethod
     def confirm_email(cls, token):
