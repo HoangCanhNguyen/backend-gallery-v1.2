@@ -20,7 +20,7 @@ from flask_jwt_extended import jwt_required
 user_schema = UserSchema()
 
 
-class UserInfo(Resource):
+class User(Resource):
     @jwt_required
     def get(self):
         user_info = UserSchema(
@@ -30,6 +30,11 @@ class UserInfo(Resource):
         current_user = UserModule(**user.find_by_id())
         reponse_user = user_info.dump(current_user)
         return make_response(reponse_user)
+
+    @jwt_required
+    def delete(self, id):
+        user = UserModule(id=id)
+        user.delete_user()
 
 
 class UserRegister(Resource):
@@ -64,7 +69,7 @@ class UserLogin(Resource):
         user_exist = user.find_by_email()
 
         if user_exist and user.verify_password():
-            if user_exist["activated"] and user_exist["role"] == 'user' or user_exist["role"] == 'admin':
+            if user_exist["status"] != "pending email":
                 accessToken = access_token(
                     user_exist["id"], True)
                 refreshToken = refresh_token(

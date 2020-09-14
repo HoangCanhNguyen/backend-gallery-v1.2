@@ -41,8 +41,7 @@ class VendorRegister(Resource):
             "email": vendor.email,
             "tel": vendor.tel,
             "role": vendor.role,
-            "activated": vendor.activated,
-            "admin_confirmation": vendor.admin_confirmation
+            "status": vendor.status,
         }
 
         email_confirmation = q.enqueue(vendor.save_to_database, args=(
@@ -59,7 +58,7 @@ class VendorLogin(Resource):
         current_vendor = vendor.find_by_email()
 
         if current_vendor and vendor.verify_password():
-            if current_vendor["activated"] and current_vendor["role"] == 'artist' or current_vendor["role"] == 'collector':
+            if current_vendor["status"] != "pending approval" and current_vendor["role"] == 'artist' or current_vendor["role"] == 'collector':
                 accessToken = access_token(
                     current_vendor["id"], True)
                 refreshToken = refresh_token(
@@ -93,3 +92,14 @@ class AccountInfo(Resource):
         for account in accounts:
             account_list.append(account)
         return make_response(json_util.dumps(account_list, ensure_ascii=False).encode('utf8'), 200)
+
+class PendingApproval(Resource):
+    @jwt_required
+    def get(self):
+        account_num = VendorModule.get_pending_approval()
+        return make_response(json_util.dumps(account_num), 200)
+
+    @jwt_required
+    def post(self):
+        user = VendorModule(**request.get_json())
+        current_user = user.vendor_approval()
