@@ -20,6 +20,6 @@ class ConfirmationModule:
             return True
         else:
             user_col.update_one({"email": email}, {
-                "$set": {"status": "pending approved"}
+                "$set": {"status": "pending approval"}
             })
             return True

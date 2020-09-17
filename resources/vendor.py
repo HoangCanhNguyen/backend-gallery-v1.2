@@ -22,9 +22,9 @@ class VendorRegister(Resource):
 
         vendor = VendorModule(**data)
         if (vendor.find_by_username()):
-            return {"msg":"TÊN ĐĂNG NHẬP ĐÃ TỒN TẠI"}, 400
+            return {"msg": "TÊN ĐĂNG NHẬP ĐÃ TỒN TẠI"}, 400
         if (vendor.find_by_email()):
-            return {"msg":"EMAIL ĐÃ TỒN TẠI"}, 400
+            return {"msg": "EMAIL ĐÃ TỒN TẠI"}, 400
 
         token = generate_confirmation_token(vendor.email)
         confirm_url = url_for('userregister', token=token, _external=True)
@@ -50,6 +50,17 @@ class VendorRegister(Resource):
         return {"msg": "XÁC THỰC EMAIL ĐỂ KÍCH HOẠT TÀI KHOẢN"}, 201
 
 
+class VendorInfo(Resource):
+    def post(self):
+        data = request.get_json()
+        vendor = VendorModule(email=data["email"])
+        data["id"] = vendor.create_information_id()
+        if vendor.find_by_email():
+            vendor.save_vendor_info_to_db(data), 200
+        else:
+            return 400
+
+
 class VendorLogin(Resource):
     def post(self):
         data = vendor_schema.load(request.get_json())
@@ -70,12 +81,14 @@ class VendorLogin(Resource):
             return {'msg': 'Opps, BẠN KHÔNG THỂ ĐĂNG NHẬP'}, 401
         return {'msg': 'TÀI KHOẢN/MẬT KHẨU KHÔNG ĐÚNG'}, 401
 
+
 class VendorLogout(Resource):
     @jwt_required
     def get(self):
         jti = get_raw_jwt()['jti']
         BLACKLIST.add(jti)
         return {"msg": "Log out successfully"}
+
 
 class AccountInfo(Resource):
     def get(self):
@@ -92,6 +105,7 @@ class AccountInfo(Resource):
         for account in accounts:
             account_list.append(account)
         return make_response(json_util.dumps(account_list, ensure_ascii=False).encode('utf8'), 200)
+
 
 class PendingApproval(Resource):
     @jwt_required
