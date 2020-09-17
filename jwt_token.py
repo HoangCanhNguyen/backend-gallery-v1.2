@@ -10,33 +10,47 @@ from blacklist import BLACKLIST
 # add claims to jwt token for authentication
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):
-    user = UserModule(id = identity)
+    user = UserModule(id=identity)
     current_user = user.find_by_id()
-    if current_user["role"] == 'admin' or current_user["role"] == 'artist' or current_user["role"] == 'collector':
+    if current_user["role"] == 'admin':
         return {
-            'role': 'non_user'
+            'role': 'admin'
         }
-    return {'role': 'user'}
+    elif current_user["role"] == 'artist' or current_user["role"] == 'collector':
+        return {
+            'role': 'vendor'
+        }
+    else:
+        return {'role': 'user'}
 
 # create jwt access token
+
+
 def access_token(_id, status):
     return create_access_token(_id, fresh=status)
 
-#create jwt refresh token
+# create jwt refresh token
+
+
 def refresh_token(_id):
     return create_refresh_token(_id)
 
-#create new access token from refresh token for authentication
+# create new access token from refresh token for authentication
+
+
 @jwt_refresh_token_required
 def recreate_access_token():
     current_user = get_jwt_identity()
     new_token = access_token(current_user, False)
     return new_token
 
-#check jwt id in blacklist
+# check jwt id in blacklist
+
+
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     return decrypted_token['jti'] in BLACKLIST
+
 
 @jwt.revoked_token_loader
 def revoked_token_callback():

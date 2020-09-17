@@ -1,7 +1,7 @@
 from models.user import UserModule
 from config import pusher
 
-from database import user_col
+from database import user_col, vendor_info_col
 
 
 class VendorModule(UserModule):
@@ -20,6 +20,10 @@ class VendorModule(UserModule):
         return update if update else None
 
     @classmethod
+    def create_information_id(cls):
+        return str(vendor_info_col.find().count() + 1)
+
+    @classmethod
     def save_to_database(cls, vendor, data):
         super().save_to_database(vendor)
         pusher.trigger("vendor_register", "registration", data)
@@ -28,3 +32,7 @@ class VendorModule(UserModule):
     def filter_by_status(cls, status):
         account_collection = user_col.find({"status": status})
         return account_collection if account_collection else None
+
+    @classmethod
+    def save_vendor_info_to_db(cls, data):
+        vendor_info_col.insert_one(data)

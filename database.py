@@ -8,6 +8,7 @@ db = pymongo.database.Database(mongo, 'gallery')
 
 # create collection
 user_col = pymongo.collection.Collection(db, 'user')
+vendor_info_col = pymongo.collection.Collection(db,'vendor information')
 pic_col = pymongo.collection.Collection(db, 'picture')
 comment_col = pymongo.collection.Collection(db, 'comment')
 reply_col = pymongo.collection.Collection(db, 'reply')
