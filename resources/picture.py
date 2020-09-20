@@ -38,13 +38,13 @@ class PictureCreation(Resource):
     @jwt_required
     def post(self):
         claims = get_jwt_claims()
-        if claims['role'] == 'vendor':
+        if claims['role'] != 'user':
             data = picture_schema.load(request.get_json())
 
             creator_id = get_jwt_identity()
-            creator_name = VendorModule(id=creator_id).username
+            creator = VendorModule(id=creator_id).find_by_id()
 
-            pic = PictureModule(creator_name=creator_name, **data)
+            pic = PictureModule(creator_name=creator["username"], **data)
 
             pic.id = pic.get_maxium_pics
 
@@ -60,7 +60,7 @@ class PictureCreation(Resource):
                 "artist": pic.artist
             }
 
-            pic_creation = pic.save_pic_to_db(trigger_data)
-            # return 200 if pic_creation else 400
+            response_pic = picture_schema.dump(pic)
+            pic_creation = pic.save_pic_to_db(response_pic, trigger_data)
         else:
-            return {"msg": "Unauthorize"}, 400
+            return {"msg": "Forbidden"}, 403
