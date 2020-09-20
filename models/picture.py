@@ -2,8 +2,9 @@ from database import pic_col
 from schemas.picture import PictureSchema
 from config import pusher
 
+
 class PictureModule:
-    def __init__(self, id='', title='', creator_name='', artist='', category='', price='', imageURL='', description='',status='in stock',admin_confirmation=False,created_at='', **kwargs):
+    def __init__(self, id='', title='', creator_name='', artist='', category='', price='', imageURL='', description='', status='in stock', admin_confirmation=False, created_at='', **kwargs):
         self.id = id
         self.title = title
         self.creator_name = creator_name
@@ -29,8 +30,9 @@ class PictureModule:
     def get_maxium_pics(self):
         return pic_col.find().count() + 1
 
-    def save_pic_to_db(self, data):
-        pic_col.insert_one(self)
+    @classmethod
+    def save_pic_to_db(cls, pic, data):
+        pic_col.insert_one(pic)
         pusher.trigger("picture", "creation", data)
 
     @classmethod
