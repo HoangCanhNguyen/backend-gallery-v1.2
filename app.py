@@ -18,7 +18,8 @@ from resources.vendor import (
     VendorLogout,
     AccountInfo,
     PendingApproval,
-    VendorInfo
+    VendorInfo,
+    PictureByCreator
 )
 from resources.picture import Picture, PictureAction
 
@@ -42,6 +43,8 @@ api.add_resource(VendorLogin, '/vendor/login')
 api.add_resource(VendorLogout, '/vendor/logout')
 api.add_resource(VendorRegister, '/vendor/register')
 api.add_resource(VendorInfo, '/vendor/information/create')
+api.add_resource(PictureByCreator, '/vendor/pictures')
+
 
 api.add_resource(AccountInfo, '/admin/account/manager')
 api.add_resource(PendingApproval, '/admin/account/pending')

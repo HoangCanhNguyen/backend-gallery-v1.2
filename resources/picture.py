@@ -76,6 +76,9 @@ class PictureAction(Resource):
             creator = VendorModule(id=creator_id).find_by_id()
             picture = PictureModule(**data)
             picture.creator_name = creator['username']
+            pic_resource = picture.find_by_id()
+            if picture.imageURL == '':
+                picture.imageURL = pic_resource['imageURL']
             result = picture_schema.dump(picture)
             picture.update_picture_to_db(result, creator['role'])
             return {"msg": "Updated successfully"}, 200

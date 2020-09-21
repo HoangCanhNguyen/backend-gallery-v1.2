@@ -25,6 +25,10 @@ class PictureModule:
         pic = pic_col.find_one({"id": self.id})
         return pic if pic else None
 
+    def find_by_creator_name(self):
+        pics = pic_col.find({"creator_name": self.creator_name})
+        return pics if pics else None
+
     @property
     def get_maxium_pics(self):
         return pic_col.find().count() + 1
@@ -32,7 +36,6 @@ class PictureModule:
     def update_picture_to_db(self, data, role):
         pic = self.find_by_id()
         if pic["creator_name"] == data["creator_name"] or role == 'admin':
-            print(data)
             pic_col.update_one({"id": data["id"]}, {
                 "$set": {
                     "title": data["title"],
@@ -41,7 +44,8 @@ class PictureModule:
                     "category": data["category"],
                     "admin_confirmation": data["admin_confirmation"],
                     "artist": data["artist"],
-                    "imageURL": data["imageURL"]
+                    "imageURL": data["imageURL"],
+                    "description": data["description"]
                 }
             })
             return True
