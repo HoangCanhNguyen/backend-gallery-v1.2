@@ -24,7 +24,7 @@ class Picture(Resource):
   # get pic by ID
     def post(self):
         pic = PictureModule(id=request.get_json()["id"])
-        return make_response(json_util.dumps(pic.find_by_id), 200)
+        return make_response(json_util.dumps(pic.find_by_id()), 200)
 
     def delete(self):
         pass
@@ -33,7 +33,8 @@ class Picture(Resource):
         pass
 
 
-class PictureCreation(Resource):
+class PictureAction(Resource):
+
   # create new pic
     @jwt_required
     def post(self):
@@ -51,7 +52,7 @@ class PictureCreation(Resource):
             trigger_data = {
                 "id": pic.id,
                 "title": pic.title,
-                "creator": pic.creator_name,
+                "creator_name": pic.creator_name,
                 "status": pic.status,
                 "price": pic.price,
                 "category": pic.category,
@@ -62,5 +63,21 @@ class PictureCreation(Resource):
 
             response_pic = picture_schema.dump(pic)
             pic_creation = pic.save_pic_to_db(response_pic, trigger_data)
+        else:
+            return {"msg": "Forbidden"}, 403
+
+    # update picture
+    @jwt_required
+    def put(self):
+        claims = get_jwt_claims()
+        creator_id = get_jwt_identity()
+        if claims["role"] != 'user':
+            data = picture_schema.load(request.get_json())
+            creator = VendorModule(id=creator_id).find_by_id()
+            picture = PictureModule(**data)
+            picture.creator_name = creator['username']
+            result = picture_schema.dump(picture)
+            picture.update_picture_to_db(result, creator['role'])
+            return {"msg": "Updated successfully"}, 200
         else:
             return {"msg": "Forbidden"}, 403
