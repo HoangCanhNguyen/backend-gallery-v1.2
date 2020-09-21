@@ -20,7 +20,7 @@ from resources.vendor import (
     PendingApproval,
     VendorInfo
 )
-from resources.picture import Picture, PictureCreation
+from resources.picture import Picture, PictureAction
 
 from resources.comment import Comment, CommentCreation
 from resources.reply import Reply, ReplyCreation
@@ -51,7 +51,7 @@ api.add_resource(ResendEmailConfirmationToken, '/resend/confirmation/email')
 
 
 api.add_resource(Picture, '/pictures')
-api.add_resource(PictureCreation, '/picture/create')
+api.add_resource(PictureAction, '/picture/method')
 
 api.add_resource(Comment, '/comments')
 api.add_resource(CommentCreation, '/comment/create')

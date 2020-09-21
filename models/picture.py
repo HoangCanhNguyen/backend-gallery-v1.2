@@ -21,7 +21,6 @@ class PictureModule:
         pic = pic_col.find_one({"title": self.title})
         return pic if pic else None
 
-    @property
     def find_by_id(self):
         pic = pic_col.find_one({"id": self.id})
         return pic if pic else None
@@ -29,6 +28,25 @@ class PictureModule:
     @property
     def get_maxium_pics(self):
         return pic_col.find().count() + 1
+
+    def update_picture_to_db(self, data, role):
+        pic = self.find_by_id()
+        if pic["creator_name"] == data["creator_name"] or role == 'admin':
+            print(data)
+            pic_col.update_one({"id": data["id"]}, {
+                "$set": {
+                    "title": data["title"],
+                    "status": data["status"],
+                    "price": data["price"],
+                    "category": data["category"],
+                    "admin_confirmation": data["admin_confirmation"],
+                    "artist": data["artist"],
+                    "imageURL": data["imageURL"]
+                }
+            })
+            return True
+        else:
+            return False
 
     @classmethod
     def save_pic_to_db(cls, pic, data):

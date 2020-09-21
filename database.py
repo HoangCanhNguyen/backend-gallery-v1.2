@@ -10,6 +10,7 @@ db = pymongo.database.Database(mongo, 'gallery')
 user_col = pymongo.collection.Collection(db, 'user')
 vendor_info_col = pymongo.collection.Collection(db,'vendor information')
 pic_col = pymongo.collection.Collection(db, 'picture')
+pending_update_pic_col = pymongo.collection.Collection(db,'pending update picture')
 comment_col = pymongo.collection.Collection(db, 'comment')
 reply_col = pymongo.collection.Collection(db, 'reply')
 
