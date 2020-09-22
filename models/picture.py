@@ -32,7 +32,6 @@ class PictureModule:
     def update_picture_to_db(self, data, role):
         pic = self.find_by_id()
         if pic["creator_name"] == data["creator_name"] or role == 'admin':
-            print(data)
             pic_col.update_one({"id": data["id"]}, {
                 "$set": {
                     "title": data["title"],
@@ -41,7 +40,8 @@ class PictureModule:
                     "category": data["category"],
                     "admin_confirmation": data["admin_confirmation"],
                     "artist": data["artist"],
-                    "imageURL": data["imageURL"]
+                    "imageURL": data["imageURL"],
+                    "description": data["description"]
                 }
             })
             return True
