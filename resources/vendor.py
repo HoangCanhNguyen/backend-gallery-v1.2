@@ -8,6 +8,8 @@ from confirmation_token import generate_confirmation_token
 from config import queue as q
 
 from models.vendor import VendorModule
+from models.picture import PictureModule
+
 from schemas.vendor import VendorSchema
 from blacklist import BLACKLIST
 from mail import Mail
@@ -117,3 +119,20 @@ class PendingApproval(Resource):
     def post(self):
         user = VendorModule(**request.get_json())
         current_user = user.vendor_approval()
+
+
+class PictureByCreator(Resource):
+    @jwt_required
+    def get(self):
+        pic_list = []
+        role = get_jwt_claims()['role']
+        if role != 'user':
+            vendor = VendorModule(id=get_jwt_identity())
+            creator_name = vendor.find_by_id()['username']
+            picObj = PictureModule(creator_name=creator_name)
+            pics = list(picObj.find_by_creator_name())
+            for pic in pics:
+                pic_list.append(pic)
+            return make_response(json_util.dumps(pic_list, ensure_ascii=False).encode('utf8'), 200)
+        else:
+            return {"msg": "Forbidden"}, 403
