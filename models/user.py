@@ -18,15 +18,24 @@ class UserModule():
         self.role = role
 
     def find_by_username(self):
-        user = user_col.find_one({"username": self.username})
+        user = user_col.find_one({"username": self.username}, {
+            "password": 0,
+            "_id": 0,
+        })
         return user if user else None
 
     def find_by_email(self):
-        user = user_col.find_one({"email": self.email})
+        user = user_col.find_one({"email": self.email}, {
+            "password": 0,
+            "_id": 0,
+        })
         return user if user else None
 
     def find_by_id(self):
-        user = user_col.find_one({"id": self.id})
+        user = user_col.find_one({"id": self.id}, {
+            "password": 0,
+            "_id": 0,
+        })
         return user if user else None
 
     @property

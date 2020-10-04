@@ -29,6 +29,15 @@ class PictureModule:
         pics = pic_col.find({"creator_name": self.creator_name})
         return pics if pics else None
 
+    def find_by_artist_name(self):
+        pics = pic_col.find({"artist": self.artist}, {
+            "id": 1,
+            "imageURL": 1,
+            "title": 1,
+            "category": 1
+        })
+        return pics if pics else None
+
     @property
     def get_maxium_pics(self):
         return pic_col.find().count() + 1
