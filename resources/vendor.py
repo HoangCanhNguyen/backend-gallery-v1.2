@@ -53,15 +53,23 @@ class VendorRegister(Resource):
 
 
 class VendorInfo(Resource):
+    def get(self):
+        data = VendorModule.get_vendor_information()
+        return make_response(json_util.dumps(data, ensure_ascii=False).encode('utf8'), 200)
+
     def post(self):
         data = request.get_json()
         vendor = VendorModule(email=data["email"])
-        data["id"] = vendor.create_information_id()
         if vendor.find_by_email():
-            vendor.save_vendor_info_to_db(data), 200
+            vendor.update_vendor_info(data), 200
         else:
             return 400
 
+class VendorList(Resource):
+    def get(self, _id):
+        vendor = VendorModule(id=_id)
+        response = vendor.find_by_id()
+        return make_response(json_util.dumps(response), 200)
 
 class VendorLogin(Resource):
     def post(self):
@@ -83,14 +91,12 @@ class VendorLogin(Resource):
             return {'msg': 'Opps, BẠN KHÔNG THỂ ĐĂNG NHẬP'}, 401
         return {'msg': 'TÀI KHOẢN/MẬT KHẨU KHÔNG ĐÚNG'}, 401
 
-
 class VendorLogout(Resource):
     @jwt_required
     def get(self):
         jti = get_raw_jwt()['jti']
         BLACKLIST.add(jti)
         return {"msg": "Log out successfully"}
-
 
 class AccountInfo(Resource):
     def get(self):
@@ -108,7 +114,6 @@ class AccountInfo(Resource):
             account_list.append(account)
         return make_response(json_util.dumps(account_list, ensure_ascii=False).encode('utf8'), 200)
 
-
 class PendingApproval(Resource):
     @jwt_required
     def get(self):
@@ -119,20 +124,3 @@ class PendingApproval(Resource):
     def post(self):
         user = VendorModule(**request.get_json())
         current_user = user.vendor_approval()
-
-
-class PictureByCreator(Resource):
-    @jwt_required
-    def get(self):
-        pic_list = []
-        role = get_jwt_claims()['role']
-        if role != 'user':
-            vendor = VendorModule(id=get_jwt_identity())
-            creator_name = vendor.find_by_id()['username']
-            picObj = PictureModule(creator_name=creator_name)
-            pics = list(picObj.find_by_creator_name())
-            for pic in pics:
-                pic_list.append(pic)
-            return make_response(json_util.dumps(pic_list, ensure_ascii=False).encode('utf8'), 200)
-        else:
-            return {"msg": "Forbidden"}, 403

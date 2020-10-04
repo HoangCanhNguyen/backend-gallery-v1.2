@@ -84,3 +84,28 @@ class PictureAction(Resource):
             return {"msg": "Updated successfully"}, 200
         else:
             return {"msg": "Forbidden"}, 403
+
+class PictureByCreator(Resource):
+    @jwt_required
+    def get(self):
+        pic_list = []
+        role = get_jwt_claims()['role']
+        if role != 'user':
+            vendor = VendorModule(id=get_jwt_identity())
+            creator_name = vendor.find_by_id()['username']
+            picObj = PictureModule(creator_name=creator_name)
+            pics = list(picObj.find_by_creator_name())
+            for pic in pics:
+                pic_list.append(pic)
+            return make_response(json_util.dumps(pic_list, ensure_ascii=False).encode('utf8'), 200)
+        else:
+            return {"msg": "Forbidden"}, 403
+
+class PictrueByArtist(Resource):
+    def get(self, artist):
+        pic_list = []
+        pic = PictureModule(artist=artist)
+        pics = list(pic.find_by_artist_name())
+        for pic in pics:
+            pic_list.append(pic)
+        return make_response(json_util.dumps(pic_list, ensure_ascii=False).encode('utf8'), 200)

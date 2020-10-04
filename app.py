@@ -19,9 +19,14 @@ from resources.vendor import (
     AccountInfo,
     PendingApproval,
     VendorInfo,
-    PictureByCreator
+    VendorList
 )
-from resources.picture import Picture, PictureAction
+from resources.picture import (
+    Picture, 
+    PictureAction,
+    PictureByCreator,
+    PictrueByArtist
+    )
 
 from resources.comment import Comment, CommentCreation
 from resources.reply import Reply, ReplyCreation
@@ -42,8 +47,8 @@ api.add_resource(User, '/user')
 api.add_resource(VendorLogin, '/vendor/login')
 api.add_resource(VendorLogout, '/vendor/logout')
 api.add_resource(VendorRegister, '/vendor/register')
-api.add_resource(VendorInfo, '/vendor/information/create')
-api.add_resource(PictureByCreator, '/vendor/pictures')
+api.add_resource(VendorInfo, '/vendor/information')
+api.add_resource(VendorList, '/vendor/list/<string:_id>')
 
 
 api.add_resource(AccountInfo, '/admin/account/manager')
@@ -52,9 +57,10 @@ api.add_resource(PendingApproval, '/admin/account/pending')
 
 api.add_resource(ResendEmailConfirmationToken, '/resend/confirmation/email')
 
-
 api.add_resource(Picture, '/pictures')
 api.add_resource(PictureAction, '/picture/method')
+api.add_resource(PictureByCreator, '/vendor/pictures')
+api.add_resource(PictrueByArtist, '/picture/<string:artist>')
 
 api.add_resource(Comment, '/comments')
 api.add_resource(CommentCreation, '/comment/create')
