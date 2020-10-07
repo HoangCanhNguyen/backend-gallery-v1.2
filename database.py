@@ -13,7 +13,7 @@ pic_col = pymongo.collection.Collection(db, 'picture')
 pending_update_pic_col = pymongo.collection.Collection(db,'pending update picture')
 comment_col = pymongo.collection.Collection(db, 'comment')
 reply_col = pymongo.collection.Collection(db, 'reply')
-
+notification_col = pymongo.collection.Collection(db,'notification')
 
 class Database:
     def __init__(self):

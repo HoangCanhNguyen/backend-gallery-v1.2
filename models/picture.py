@@ -1,6 +1,5 @@
 from database import pic_col
 from schemas.picture import PictureSchema
-from config import pusher
 
 
 class PictureModule:
@@ -64,7 +63,6 @@ class PictureModule:
     @classmethod
     def save_pic_to_db(cls, pic, data):
         pic_col.insert_one(pic)
-        pusher.trigger("picture", "creation", data)
 
     @classmethod
     def get_all_pics(cls):

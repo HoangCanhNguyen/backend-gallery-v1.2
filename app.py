@@ -22,15 +22,16 @@ from resources.vendor import (
     VendorList
 )
 from resources.picture import (
-    Picture, 
+    Picture,
     PictureAction,
     PictureByCreator,
     PictrueByArtist
-    )
+)
 
-from resources.comment import Comment, CommentCreation
+from resources.comment import Comment, CommentCreation, Comment1
 from resources.reply import Reply, ReplyCreation
 from resources.confirmation import ResendEmailConfirmationToken, EmailConfirmation
+from resources.notification import Notification, ReplyNotification
 
 
 # add routes to API
@@ -63,8 +64,12 @@ api.add_resource(PictureByCreator, '/vendor/pictures')
 api.add_resource(PictrueByArtist, '/picture/<string:artist>')
 
 api.add_resource(Comment, '/comments')
+api.add_resource(Comment1, '/comments/<string:_id>')
+
 api.add_resource(CommentCreation, '/comment/create')
 
+api.add_resource(Notification, '/notification/comment/<string:_id>')
+api.add_resource(ReplyNotification, '/notification/reply/<string:_id>')
 api.add_resource(Reply, '/reply')
 api.add_resource(ReplyCreation, '/reply/create')
 
